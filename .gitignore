@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Lua / LuaJIT bytecode
+*.luac
+
+# Build / package artifacts
+build/
+dist/
+*.love
+
+# Temporary files
+tmp/
+temp/
+
+# Luarocks
+.luarocks/
+.lua_modules/
