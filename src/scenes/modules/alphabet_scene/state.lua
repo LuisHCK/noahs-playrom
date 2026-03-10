@@ -83,6 +83,7 @@ function state.create(context)
         isFlipLocked = false,
         activeTouchId = nil,
         pointer = nil,
+        pendingCardAudio = nil,
         cards = buildGrid(deck)
     }
 end

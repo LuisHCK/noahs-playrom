@@ -6,7 +6,11 @@ function audio.playIntro(state)
 end
 
 function audio.playSwipe(state)
-    state.context.audio:play("common.sfx.swipe")
+    local swipeKey = string.format("alphabet.%s.swipe", state.language)
+    local ok = state.context.audio:play(swipeKey)
+    if not ok then
+        state.context.audio:play("common.sfx.swipe")
+    end
 end
 
 function audio.playFlip(state)
@@ -19,10 +23,7 @@ function audio.playCurrentLetter(state, card)
     end
 
     local letterKey = string.format("alphabet.%s.letters.%s", state.language, card.key)
-    local ok = state.context.audio:play(letterKey)
-    if not ok then
-        state.context.audio:play("common.sfx.flip")
-    end
+    state.context.audio:play(letterKey)
 end
 
 function audio.playCurrentObject(state, card)
@@ -31,10 +32,7 @@ function audio.playCurrentObject(state, card)
     end
 
     local objectKey = string.format("alphabet.%s.objects.%s", state.language, card.key)
-    local ok = state.context.audio:play(objectKey)
-    if not ok then
-        state.context.audio:play("common.sfx.flip")
-    end
+    state.context.audio:play(objectKey)
 end
 
 return audio
