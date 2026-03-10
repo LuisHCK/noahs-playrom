@@ -36,8 +36,8 @@ local function getObjectsSpritesheet(language)
         path = "assets/images/spritesheets/objects-spanish.png",
         columns = 4,
         rows = 7,
-        spriteWidth = 184,
-        spriteHeight = 160
+        spriteWidth = 125,
+        spriteHeight = 115
     })
 
     return objectsSpanishSpritesheet
