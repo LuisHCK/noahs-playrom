@@ -26,10 +26,10 @@ return {
         },
         bgm = {
             menu = {
-                path = "assets/audio/common/bgm/menu.wav",
+                path = "assets/audio/common/bgm/menu.ogg",
                 mode = "stream",
                 loop = true,
-                volume = 0.4
+                volume = 0.2
             }
         }
     },

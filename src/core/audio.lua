@@ -1,7 +1,8 @@
 local audioFiles = require("src.data.audio_files")
 
 local audio = {
-    cache = {}
+    cache = {},
+    activeBgm = nil
 }
 
 -- Resolve dot-path keys like "alphabet.en.letters.a".
@@ -126,6 +127,20 @@ function audio:play(key)
     local source = getSource(entry)
     if not source then
         return false
+    end
+
+    -- Keep looping BGM continuous when scenes re-enter and call play again.
+    local isBgm = entry.loop and entry.mode == "stream"
+    if isBgm then
+        if self.activeBgm == source and source:isPlaying() then
+            return true
+        end
+
+        if self.activeBgm and self.activeBgm ~= source then
+            self.activeBgm:stop()
+        end
+
+        self.activeBgm = source
     end
 
     source:stop()

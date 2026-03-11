@@ -8,6 +8,9 @@ local menu = {}
 function menu:load(context)
     self.layout = layout.build()
     self.state = model.createState(context, self.layout)
+
+    -- Start menu BGM when entering the main screen.
+    context.audio:play("common.bgm.menu")
 end
 
 function menu:update(dt)
