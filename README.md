@@ -52,7 +52,7 @@ How files are selected:
 - `src/scenes`: boot, modular main menu, alphabet vertical slice, module placeholders
 - `src/ui`: reusable buttons/cards/layout helpers
 - `src/data`: locales, content, audio maps, audio files, asset manifest/profiles
-- `libs/scenery`: vendored scene manager
+- `libs/scenery`: scene manager
 
 ## Asset swapping
 
