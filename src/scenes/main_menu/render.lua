@@ -30,31 +30,33 @@ local function getImage(path)
     return ok and image or nil
 end
 
-local function drawMenuBackground(asset)
+local function drawMenuBackground(asset, viewport)
     if asset and asset.type == "image" then
         local image = getImage(asset.path)
         if image then
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(image, 0, 0, 0, 1280 / image:getWidth(), 720 / image:getHeight())
+            love.graphics.draw(image, 0, 0, 0, viewport.width / image:getWidth(), viewport.height / image:getHeight())
             return
         end
     end
 
     love.graphics.setColor(colorFrom(asset))
-    love.graphics.rectangle("fill", 0, 0, 1280, 720)
+    love.graphics.rectangle("fill", 0, 0, viewport.width, viewport.height)
 end
 
 function render.draw(state)
     local context = state.context
     local i18n = context.i18n
     local assets = context.assets
+    local viewport = context.viewport
+    local content = viewport:getContentArea()
 
     local backgroundAsset = assets:get("menuBackground")
 
-    drawMenuBackground(backgroundAsset)
+    drawMenuBackground(backgroundAsset, viewport)
 
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.printf(i18n:t("appTitle"), state.layout.titleX, state.layout.titleY, 1120, "left")
+    love.graphics.printf(i18n:t("appTitle"), state.layout.titleX, state.layout.titleY, content.width, "left")
 
     for _, button in ipairs(state.moduleButtons) do
         -- Map each tile to its dedicated final art asset.

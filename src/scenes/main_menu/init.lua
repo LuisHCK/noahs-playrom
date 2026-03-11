@@ -6,14 +6,21 @@ local render = require("src.scenes.main_menu.render")
 local menu = {}
 
 function menu:load(context)
-    self.layout = layout.build()
+    self.layout = layout.build(context.viewport)
     self.state = model.createState(context, self.layout)
 
     -- Start menu BGM when entering the main screen.
     context.audio:play("common.bgm.menu")
 end
 
+function menu:resize()
+    local nextLayout = layout.build(self.state.context.viewport)
+    model.applyLayout(self.state, nextLayout)
+end
+
 function menu:update(dt)
+    model.ensureLayout(self.state, layout.build)
+
     -- Smooth press/release scale animation for tiles.
     local animationSpeed = 12
     for _, button in ipairs(self.state.moduleButtons) do
@@ -56,6 +63,10 @@ end
 
 function menu:touchreleased(_, x, y)
     input.release(self.state, x, y)
+end
+
+function menu:touchmoved(_, x, y)
+    input.press(self.state, x, y)
 end
 
 function menu:keypressed(key)

@@ -32,12 +32,12 @@ local spriteIndexByKey = {
     z = 27
 }
 
-local function buildGrid(deck)
+local function buildGrid(deck, content)
     local columns = 9
     local rows = math.ceil(#deck / columns)
     local gap = 10
-    local startX = 40
-    local startY = 130
+    local startX = content.x + 40
+    local startY = content.y + 130
     local areaWidth = 1200
     local areaHeight = 540
     local cardWidth = (areaWidth - (columns - 1) * gap) / columns
@@ -72,9 +72,31 @@ local function buildGrid(deck)
     return cards
 end
 
+local function layoutCards(cards, content)
+    local columns = 9
+    local rows = math.ceil(#cards / columns)
+    local gap = 10
+    local startX = content.x + 40
+    local startY = content.y + 130
+    local areaWidth = 1200
+    local areaHeight = 540
+    local cardWidth = (areaWidth - (columns - 1) * gap) / columns
+    local cardHeight = (areaHeight - (rows - 1) * gap) / rows
+
+    for index, card in ipairs(cards) do
+        local row = math.floor((index - 1) / columns)
+        local column = (index - 1) % columns
+        card.rect.x = startX + column * (cardWidth + gap)
+        card.rect.y = startY + row * (cardHeight + gap)
+        card.rect.width = cardWidth
+        card.rect.height = cardHeight
+    end
+end
+
 function state.create(context)
     local language = context.i18n:getLanguage()
     local deck = decks[language] or decks.en
+    local content = context.viewport:getContentArea()
 
     return {
         context = context,
@@ -84,7 +106,13 @@ function state.create(context)
         activeTouchId = nil,
         pointer = nil,
         pendingCardAudio = nil,
-        cards = buildGrid(deck)
+        contentLayout = {
+            x = content.x,
+            y = content.y,
+            width = content.width,
+            height = content.height
+        },
+        cards = buildGrid(deck, content)
     }
 end
 
@@ -136,6 +164,23 @@ function state.update(self, dt)
     self.isFlipLocked = hasActiveFlip
 
     return completed
+end
+
+function state.relayout(self)
+    local content = self.context.viewport:getContentArea()
+    layoutCards(self.cards, content)
+    self.contentLayout.x = content.x
+    self.contentLayout.y = content.y
+    self.contentLayout.width = content.width
+    self.contentLayout.height = content.height
+end
+
+function state.ensureLayout(self)
+    local content = self.context.viewport:getContentArea()
+    local layout = self.contentLayout
+    if layout.x ~= content.x or layout.y ~= content.y or layout.width ~= content.width or layout.height ~= content.height then
+        state.relayout(self)
+    end
 end
 
 return state

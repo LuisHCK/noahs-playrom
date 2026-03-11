@@ -55,7 +55,7 @@ end
 function app:resize(w, h)
     viewport:update(w, h)
     if self.scenery.resize then
-        self.scenery:resize(config.baseWidth, config.baseHeight)
+        self.scenery:resize(viewport.width, viewport.height)
     end
 end
 
@@ -75,10 +75,10 @@ function app:mousereleased(x, y, button, istouch, presses)
 end
 
 function app:touchpressed(id, x, y, dx, dy, pressure)
-    -- Love touch coords are normalized [0..1], so map to pixels first.
     local windowW, windowH = love.graphics.getDimensions()
-    local px = x * windowW
-    local py = y * windowH
+    -- Support both normalized [0..1] and pixel touch coordinates.
+    local px = (x >= 0 and x <= 1) and (x * windowW) or x
+    local py = (y >= 0 and y <= 1) and (y * windowH) or y
     local vx, vy = viewport:toVirtual(px, py)
 
     if self.scenery.touchpressed then
@@ -88,12 +88,23 @@ end
 
 function app:touchreleased(id, x, y, dx, dy, pressure)
     local windowW, windowH = love.graphics.getDimensions()
-    local px = x * windowW
-    local py = y * windowH
+    local px = (x >= 0 and x <= 1) and (x * windowW) or x
+    local py = (y >= 0 and y <= 1) and (y * windowH) or y
     local vx, vy = viewport:toVirtual(px, py)
 
     if self.scenery.touchreleased then
         self.scenery:touchreleased(id, vx, vy, dx, dy, pressure)
+    end
+end
+
+function app:touchmoved(id, x, y, dx, dy, pressure)
+    local windowW, windowH = love.graphics.getDimensions()
+    local px = (x >= 0 and x <= 1) and (x * windowW) or x
+    local py = (y >= 0 and y <= 1) and (y * windowH) or y
+    local vx, vy = viewport:toVirtual(px, py)
+
+    if self.scenery.touchmoved then
+        self.scenery:touchmoved(id, vx, vy, dx, dy, pressure)
     end
 end
 

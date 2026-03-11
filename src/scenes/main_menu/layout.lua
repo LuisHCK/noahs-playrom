@@ -1,10 +1,13 @@
 local layout = {}
 
-function layout.build()
+function layout.build(viewport)
+    local content = viewport:getContentArea()
+    local edgeMargin = 32
+
     -- Area reserved for the 2x2 game tiles.
     local menuRect = {
-        x = 100,
-        y = 150,
+        x = content.x + 100,
+        y = content.y + 150,
         width = 1080,
         height = 500
     }
@@ -30,17 +33,17 @@ function layout.build()
     local startY = menuRect.y + (menuRect.height - totalHeight) * 0.5
 
     return {
-        titleX = 80,
-        titleY = 50,
+        titleX = content.x + 80,
+        titleY = content.y + 50,
         profileButton = {
-            x = 970,
-            y = 40,
+            x = viewport.width - edgeMargin - 140 - 90 - 12,
+            y = edgeMargin,
             width = 140,
             height = 48
         },
         languageButton = {
-            x = 1120,
-            y = 40,
+            x = viewport.width - edgeMargin - 90,
+            y = edgeMargin,
             width = 90,
             height = 48
         },

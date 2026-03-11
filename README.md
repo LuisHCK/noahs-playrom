@@ -13,6 +13,38 @@ love .
 
 Default baseline resolution is 1280x720 (HD 16:9) with letterbox scaling.
 
+## Package .love
+
+Use the packaging script to generate a clean `.love` archive while respecting `.gitignore`.
+
+From project root:
+
+```bash
+scripts/pack-love.sh
+```
+
+This creates:
+
+- `dist/noahs-playroom.love`
+
+Custom output path:
+
+```bash
+scripts/pack-love.sh dist/my-build.love
+```
+
+Package a committed snapshot instead of working-tree files:
+
+```bash
+scripts/pack-love.sh dist/release.love --ref HEAD
+```
+
+How files are selected:
+
+- Default mode uses `git ls-files --cached --others --exclude-standard`
+- That includes tracked files plus non-ignored untracked files
+- Files and folders ignored by `.gitignore` are excluded from the archive
+
 ## Project layout
 
 - `main.lua`, `conf.lua`: app entry and Love config

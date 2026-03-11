@@ -9,6 +9,10 @@ function model.createState(context, layout)
     local state = {
         context = context,
         layout = layout,
+        viewportLayout = {
+            width = context.viewport.width,
+            height = context.viewport.height
+        },
         moduleButtons = {},
         languageButton = nil,
         profileButton = nil,
@@ -72,6 +76,39 @@ function model.createState(context, layout)
     })
 
     return state
+end
+
+function model.applyLayout(state, layout)
+    state.layout = layout
+
+    for index, button in ipairs(state.moduleButtons) do
+        local slot = layout.moduleSlots[index]
+        button.x = slot.x
+        button.y = slot.y
+        button.width = slot.width
+        button.height = slot.height
+    end
+
+    state.languageButton.x = layout.languageButton.x
+    state.languageButton.y = layout.languageButton.y
+    state.languageButton.width = layout.languageButton.width
+    state.languageButton.height = layout.languageButton.height
+
+    state.profileButton.x = layout.profileButton.x
+    state.profileButton.y = layout.profileButton.y
+    state.profileButton.width = layout.profileButton.width
+    state.profileButton.height = layout.profileButton.height
+
+    state.viewportLayout.width = state.context.viewport.width
+    state.viewportLayout.height = state.context.viewport.height
+end
+
+function model.ensureLayout(state, layoutBuilder)
+    local viewport = state.context.viewport
+    local current = state.viewportLayout
+    if current.width ~= viewport.width or current.height ~= viewport.height then
+        model.applyLayout(state, layoutBuilder(viewport))
+    end
 end
 
 return model

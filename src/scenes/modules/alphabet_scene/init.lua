@@ -5,6 +5,7 @@ local render = require("src.scenes.modules.alphabet_scene.render")
 local audio = require("src.scenes.modules.alphabet_scene.audio")
 
 local scene = {}
+local EDGE_MARGIN = 32
 -- Delay card voice slightly so it does not overlap the flip SFX.
 local CARD_AUDIO_DELAY = 0.18
 
@@ -25,8 +26,8 @@ function scene:load(context)
     self.state = stateFactory.create(context)
     self.state.backButton = Button.new({
         id = "back",
-        x = 40,
-        y = 40,
+        x = EDGE_MARGIN,
+        y = EDGE_MARGIN,
         width = 140,
         height = 50,
         onClick = function()
@@ -43,6 +44,8 @@ function scene:draw()
 end
 
 function scene:update(dt)
+    stateFactory.ensureLayout(self.state)
+
     -- Drain queued card audio after the configured delay.
     if self.state.pendingCardAudio then
         local pending = self.state.pendingCardAudio
@@ -68,6 +71,10 @@ function scene:update(dt)
             delay = CARD_AUDIO_DELAY
         }
     end
+end
+
+function scene:resize()
+    stateFactory.relayout(self.state)
 end
 
 function scene:mousepressed(x, y)
@@ -98,6 +105,10 @@ function scene:touchreleased(id, x, y)
     end
 
     handleAction(self.state, input.finish(self.state, id, x, y))
+end
+
+function scene:touchmoved(_, x, y)
+    self.state.backButton:press(x, y)
 end
 
 function scene:keypressed(key)

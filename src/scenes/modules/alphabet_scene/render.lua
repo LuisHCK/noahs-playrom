@@ -92,6 +92,8 @@ end
 function render.draw(state)
     local i18n = state.context.i18n
     local assets = state.context.assets
+    local viewport = state.context.viewport
+    local content = viewport:getContentArea()
     local moduleData = i18n:getModuleData("alphabet")
     local cardAsset = assets:get("alphabetCard")
     local letterSheet = getAlphabetSpritesheet()
@@ -100,15 +102,15 @@ function render.draw(state)
     local sceneBackground = getImage("assets/images/backgrounds/background-2.jpg")
     if sceneBackground then
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(sceneBackground, 0, 0, 0, 1280 / sceneBackground:getWidth(), 720 / sceneBackground:getHeight())
+        love.graphics.draw(sceneBackground, 0, 0, 0, viewport.width / sceneBackground:getWidth(), viewport.height / sceneBackground:getHeight())
     else
         love.graphics.setColor(colorFrom(assets:get("panelBackground")))
-        love.graphics.rectangle("fill", 0, 0, 1280, 720)
+        love.graphics.rectangle("fill", 0, 0, viewport.width, viewport.height)
     end
 
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.printf(moduleData.title or "Alphabet", 0, 45, 1280, "center")
-    love.graphics.printf(moduleData.subtitle or "", 0, 80, 1280, "center")
+    love.graphics.printf(moduleData.title or "Alphabet", content.x, content.y + 45, content.width, "center")
+    love.graphics.printf(moduleData.subtitle or "", content.x, content.y + 80, content.width, "center")
 
     local back = state.backButton
     love.graphics.setColor(0.9, 0.85, 0.75, 1)
@@ -186,7 +188,7 @@ function render.draw(state)
     end
 
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.printf("Tap any card to flip", 0, 686, 1280, "center")
+    love.graphics.printf("Tap any card to flip", content.x, content.y + 686, content.width, "center")
 end
 
 return render

@@ -32,6 +32,10 @@ function love.touchreleased(id, x, y, dx, dy, pressure)
     app:touchreleased(id, x, y, dx, dy, pressure)
 end
 
+function love.touchmoved(id, x, y, dx, dy, pressure)
+    app:touchmoved(id, x, y, dx, dy, pressure)
+end
+
 function love.keypressed(key, scancode, isrepeat)
     app:keypressed(key, scancode, isrepeat)
 end
