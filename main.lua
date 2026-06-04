@@ -1,6 +1,9 @@
 local app = require("src.core.app")
 
 function love.load(args)
+    if love.system.getOS() == "Android" then
+        love.window.setFullscreen(true)
+    end
     app:load(args)
 end
 

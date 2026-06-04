@@ -1,5 +1,6 @@
 return {
     appTitle = "Noah's Playroom",
+    comingSoon = "Coming Soon",
     languageButton = "ES",
     back = "Back",
     modules = {

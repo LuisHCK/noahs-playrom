@@ -107,3 +107,9 @@ fi
 size="$(du -h "$output_abs" | awk '{print $1}')"
 echo "Packed: $output_abs"
 echo "Size:   $size"
+
+# Copy to Android project
+android_assets="android/app/src/embed/assets/game.love"
+mkdir -p "$(dirname "$android_assets")"
+cp "$output_abs" "$android_assets"
+echo "Copied: $android_assets"

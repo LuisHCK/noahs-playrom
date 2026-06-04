@@ -1,5 +1,6 @@
 return {
     appTitle = "El Rincón de Noah",
+    comingSoon = "Próximamente",
     languageButton = "EN",
     back = "Volver",
     modules = {

@@ -3,7 +3,8 @@ local config = {
     baseWidth = 1280,
     baseHeight = 720,
     defaultLanguage = "en",
-    defaultAssetProfile = "prototype"
+    defaultAssetProfile = "prototype",
+    deviceProfile = "default" -- "default" or "watch"
 }
 
 return config

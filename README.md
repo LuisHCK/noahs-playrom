@@ -13,6 +13,21 @@ love .
 
 Default baseline resolution is 1280x720 (HD 16:9) with letterbox scaling.
 
+### Watch mode (desktop test)
+
+A parallel watch-optimized UI can be tested on desktop without a smartwatch:
+
+1. Set `deviceProfile = "watch"` in `src/core/config.lua`
+2. Launch with a small square resolution to simulate a watch screen:
+
+```bash
+love . --window-width 450 --window-height 450
+```
+
+3. Or resize the window manually after launch — layouts adapt dynamically.
+
+Watch scenes use `viewport.width` / `viewport.height` directly (not the 16:9 safe zone), so shrinking the window to any small size gives an accurate preview of the watch layout.
+
 ## Package .love
 
 Use the packaging script to generate a clean `.love` archive while respecting `.gitignore`.
@@ -44,6 +59,34 @@ How files are selected:
 - Default mode uses `git ls-files --cached --others --exclude-standard`
 - That includes tracked files plus non-ignored untracked files
 - Files and folders ignored by `.gitignore` are excluded from the archive
+
+## Android (debug/dev)
+
+This project uses the official love-android template as a git submodule at `android/`.
+
+Add the submodule (first-time setup):
+
+```bash
+git submodule add https://github.com/love2d/love-android android
+git submodule update --init --recursive
+```
+
+After cloning the repo, initialize submodules:
+
+```bash
+git submodule update --init --recursive
+```
+
+Package and install the game into the Android template:
+
+```bash
+scripts/setup-android.sh
+```
+
+Then open `android/` in Android Studio and run the app. Configuration notes:
+
+- The setup script writes `app.application_id` and `app.orientation` in `android/gradle.properties`
+- You can adjust them later in `android/gradle.properties`
 
 ## Project layout
 

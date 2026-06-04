@@ -1,0 +1,4 @@
+[submodule "android"]
+	path = android
+	url = https://github.com/love2d/love-android
+	ignore = untracked
