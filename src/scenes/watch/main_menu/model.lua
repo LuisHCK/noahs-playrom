@@ -58,6 +58,11 @@ function model.tapModule(state)
     end
 end
 
+function model.tapSettings(state)
+    state.queuedScene = "settings"
+    state.transitionTimer = TRANSITION_DELAY
+end
+
 function model.update(state, dt)
     if state.swipeAnim.active then
         state.swipeAnim.progress = math.min(state.swipeAnim.progress + dt / SWIPE_DURATION, 1)

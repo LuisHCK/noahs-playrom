@@ -23,7 +23,8 @@ local function buildContext()
         saveSettings = function()
             storage:save({
                 language = i18n:getLanguage(),
-                assetProfile = assets:getProfile()
+                assetProfile = assets:getProfile(),
+                volume = audio:getVolume()
             })
         end
     }
@@ -34,6 +35,7 @@ function app:load()
     self.settings = storage:load()
     i18n:setLanguage(self.settings.language or config.defaultLanguage)
     assets:setProfile(self.settings.assetProfile or config.defaultAssetProfile)
+    audio:setVolume(tonumber(self.settings.volume) or 1)
 
     viewport:update(love.graphics.getDimensions())
 

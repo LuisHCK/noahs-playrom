@@ -27,9 +27,10 @@ end
 function storage:save(data)
     -- Keep save format minimal and human-readable for quick debugging.
     local encoded = string.format(
-        "return { language = %q, assetProfile = %q }",
+        "return { language = %q, assetProfile = %q, volume = %q }",
         data.language or "en",
-        data.assetProfile or "prototype"
+        data.assetProfile or "prototype",
+        tostring(data.volume or 1)
     )
 
     love.filesystem.write(saveFile, encoded)

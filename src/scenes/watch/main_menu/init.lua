@@ -35,7 +35,7 @@ function menu:mousepressed(x, y)
 end
 
 function menu:mousereleased(x, y)
-    input.finish(self.state, "mouse", x, y)
+    input.finish(self.state, self.layout, "mouse", x, y)
 end
 
 function menu:touchpressed(id, x, y)
@@ -43,7 +43,7 @@ function menu:touchpressed(id, x, y)
 end
 
 function menu:touchreleased(id, x, y)
-    input.finish(self.state, id, x, y)
+    input.finish(self.state, self.layout, id, x, y)
 end
 
 function menu:touchmoved(id, x, y)

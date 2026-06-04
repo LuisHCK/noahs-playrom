@@ -110,6 +110,14 @@ function render.draw(state, layout)
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
     love.graphics.printf(i18n:t("appTitle"), layout.titleRect.x, layout.titleRect.y + 10, layout.titleRect.width, "center")
 
+    -- Settings button.
+    local sb = layout.settingsButton
+    love.graphics.setColor(0.9, 0.85, 0.75, 1)
+    love.graphics.rectangle("fill", sb.x, sb.y, sb.width, sb.height, 10, 10)
+    love.graphics.setColor(0.1, 0.1, 0.1, 1)
+    love.graphics.rectangle("line", sb.x, sb.y, sb.width, sb.height, 10, 10)
+    love.graphics.printf("⚙", sb.x, sb.y + 10, sb.width, "center")
+
     -- Toast for "Coming Soon".
     if state.toastTimer > 0 then
         local alpha = math.min(1, state.toastTimer / 0.3)

@@ -20,6 +20,7 @@ function sceneManager:build()
     if config.deviceProfile == "watch" then
         entries[#entries + 1] = { path = "src.scenes.watch.main_menu", key = "watch_main_menu" }
         entries[#entries + 1] = { path = "src.scenes.watch.alphabet", key = "watch_alphabet" }
+        entries[#entries + 1] = { path = "src.scenes.watch.settings", key = "watch_settings" }
     end
 
     self.scenery = SceneryInit(unpack(entries))

@@ -2,7 +2,8 @@ local audioFiles = require("src.data.audio_files")
 
 local audio = {
     cache = {},
-    activeBgm = nil
+    activeBgm = nil,
+    volume = 1
 }
 
 -- Resolve dot-path keys like "alphabet.en.letters.a".
@@ -129,6 +130,9 @@ function audio:play(key)
         return false
     end
 
+    -- Apply global volume multiplier.
+    source:setVolume(entry.volume * self.volume)
+
     -- Keep looping BGM continuous when scenes re-enter and call play again.
     local isBgm = entry.loop and entry.mode == "stream"
     if isBgm then
@@ -146,6 +150,14 @@ function audio:play(key)
     source:stop()
     source:play()
     return true
+end
+
+function audio:setVolume(v)
+    self.volume = math.max(0, math.min(1, v))
+end
+
+function audio:getVolume()
+    return self.volume
 end
 
 return audio
