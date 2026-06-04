@@ -3,14 +3,26 @@ local Spritesheet = require("src.core.spritesheet")
 local render = {}
 local alphabetSpritesheet = nil
 local objectsSpanishSpritesheet = nil
-local CARD_COLOR = { 0.96, 0.93, 0.87, 1 }
 local BACK_FILL = { 0.9, 0.85, 0.75, 1 }
 local BACK_BORDER = { 0.1, 0.1, 0.1, 1 }
+local imageCache = {}
+
+local function getImage(path)
+    if not path then return nil end
+    if imageCache[path] ~= nil then return imageCache[path] end
+    if not love.filesystem.getInfo(path) then imageCache[path] = false; return nil end
+    local ok, img = pcall(love.graphics.newImage, path)
+    imageCache[path] = ok and img or false
+    return ok and img or nil
+end
+
+local function colorFrom(asset)
+    if asset and asset.type == "color" then return asset.value end
+    return { 1, 1, 1, 1 }
+end
 
 local function getAlphabetSpritesheet()
-    if alphabetSpritesheet ~= nil then
-        return alphabetSpritesheet
-    end
+    if alphabetSpritesheet ~= nil then return alphabetSpritesheet end
     alphabetSpritesheet = Spritesheet.new({
         path = "assets/images/spritesheets/alphabet-spritesheet.png",
         columns = 1, rows = 27, spriteWidth = 128, spriteHeight = 130
@@ -19,12 +31,8 @@ local function getAlphabetSpritesheet()
 end
 
 local function getObjectsSpritesheet(language)
-    if language ~= "es" then
-        return nil
-    end
-    if objectsSpanishSpritesheet ~= nil then
-        return objectsSpanishSpritesheet
-    end
+    if language ~= "es" then return nil end
+    if objectsSpanishSpritesheet ~= nil then return objectsSpanishSpritesheet end
     objectsSpanishSpritesheet = Spritesheet.new({
         path = "assets/images/spritesheets/objects-spanish.png",
         columns = 4, rows = 7, spriteWidth = 125, spriteHeight = 115
@@ -47,15 +55,30 @@ local function wrapIndex(index, total)
     return ((index - 1 + total) % total) + 1
 end
 
+local function drawCardBackground(rect, asset)
+    if asset and asset.type == "image" then
+        local image = getImage(asset.path)
+        if image then
+            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.draw(image, rect.x, rect.y, 0, rect.width / image:getWidth(), rect.height / image:getHeight())
+            return
+        end
+    end
+    love.graphics.setColor(colorFrom(asset))
+    love.graphics.rectangle("fill", rect.x, rect.y, rect.width, rect.height, 10, 10)
+end
+
 function render.draw(stateObj, layout)
     local viewport = stateObj.context.viewport
+    local assets = stateObj.context.assets
     local total = #stateObj.deck
     local cardRect = layout.cardRect
     local letterSheet = getAlphabetSpritesheet()
     local objectSheet = getObjectsSpritesheet(stateObj.language)
+    local cardBgAsset = assets:get("alphabetCard")
 
     -- Background.
-    love.graphics.setColor(CARD_COLOR)
+    love.graphics.setColor(0.96, 0.93, 0.87, 1)
     love.graphics.rectangle("fill", 0, 0, viewport.width, viewport.height)
 
     -- Back button.
@@ -81,9 +104,9 @@ function render.draw(stateObj, layout)
         local c = stateObj.deck[idx]
         local cx = cardRect.x + offset * viewport.width + slideOffset
         local cy = cardRect.y
+        local bgRect = { x = cx, y = cy, width = cardRect.width, height = cardRect.height }
 
-        love.graphics.setColor(CARD_COLOR)
-        love.graphics.rectangle("fill", cx, cy, cardRect.width, cardRect.height, 10, 10)
+        drawCardBackground(bgRect, cardBgAsset)
 
         -- Only draw detailed card for the current one.
         if idx == stateObj.currentIndex then
