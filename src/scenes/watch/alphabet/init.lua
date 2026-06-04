@@ -14,6 +14,15 @@ function scene:load(context)
     self.viewportSnapshot = { w = context.viewport.width, h = context.viewport.height }
 
     audio.playIntro(self.state)
+
+    -- Queue letter audio for first card with 1s delay on initial load.
+    local firstCard = self.state.deck[1]
+    firstCard.playedAutoLetter = true
+    self.state.pendingAudio = {
+        card = firstCard,
+        side = "letter",
+        delay = 1.0
+    }
 end
 
 function scene:resize()
@@ -42,13 +51,23 @@ function scene:update(dt)
         end
     end
 
-    -- Advance flip/swipe animations; returns card when flip completes.
-    local completedCard = stateModule.update(self.state, dt)
+    -- Advance flip/swipe animations.
+    local completedCard, autoLetterCard = stateModule.update(self.state, dt)
     if completedCard then
+        -- Flip completed: queue letter/object audio with short delay.
         self.state.pendingAudio = {
             card = completedCard,
             side = completedCard.isFront and "letter" or "object",
             delay = CARD_AUDIO_DELAY
+        }
+    end
+    if autoLetterCard then
+        -- Swipe landed on a card whose letter hasn't been played yet.
+        autoLetterCard.playedAutoLetter = true
+        self.state.pendingAudio = {
+            card = autoLetterCard,
+            side = "letter",
+            delay = 0
         }
     end
 end

@@ -45,6 +45,20 @@ local function fitSizeInRect(contentW, contentH, rectW, rectH)
     return (rectW - contentW * scale) * 0.5, (rectH - contentH * scale) * 0.5, contentW * scale, contentH * scale
 end
 
+local function drawAssetToRect(asset, rect)
+    if asset and asset.type == "image" then
+        local image = getImage(asset.path)
+        if image then
+            local x, y, dw, dh = fitSizeInRect(image:getWidth(), image:getHeight(), rect.width, rect.height)
+            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.draw(image, rect.x + x, rect.y + y, 0, dw / image:getWidth(), dh / image:getHeight())
+            return
+        end
+    end
+    love.graphics.setColor(colorFrom(asset))
+    love.graphics.rectangle("fill", rect.x, rect.y, rect.width, rect.height, 10, 10)
+end
+
 local function insetRect(rectW, rectH, factor)
     local w = rectW * factor
     local h = rectH * factor
@@ -75,7 +89,7 @@ function render.draw(stateObj, layout)
     love.graphics.setColor(BACK_BORDER)
     love.graphics.rectangle("line", bb.x, bb.y, bb.width, bb.height, 8, 8)
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.printf("←", bb.x, bb.y + 10, bb.width, "center")
+    love.graphics.printf("←", bb.x, bb.y + (bb.height - 30) * 0.5, bb.width, "center")
 
     -- Compute slide offset for card.
     local slideOffset = 0
@@ -112,20 +126,8 @@ function render.draw(stateObj, layout)
             love.graphics.scale(scaleX, 1)
             love.graphics.translate(-cardRect.width * 0.5, -cardRect.height * 0.5)
 
-            -- Card background.
-            if cardBgAsset and cardBgAsset.type == "image" then
-                local image = getImage(cardBgAsset.path)
-                if image then
-                    love.graphics.setColor(1, 1, 1, 1)
-                    love.graphics.draw(image, 0, 0, 0, cardRect.width / image:getWidth(), cardRect.height / image:getHeight())
-                else
-                    love.graphics.setColor(colorFrom(cardBgAsset))
-                    love.graphics.rectangle("fill", 0, 0, cardRect.width, cardRect.height, 10, 10)
-                end
-            else
-                love.graphics.setColor(colorFrom(cardBgAsset))
-                love.graphics.rectangle("fill", 0, 0, cardRect.width, cardRect.height, 10, 10)
-            end
+            -- Card background (aspect-ratio preserved).
+            drawAssetToRect(cardBgAsset, { x = 0, y = 0, width = cardRect.width, height = cardRect.height })
 
             if c.isFront then
                 local hasSprite = false
@@ -154,20 +156,8 @@ function render.draw(stateObj, layout)
 
             love.graphics.pop()
         else
-            -- Peek card: background only.
-            if cardBgAsset and cardBgAsset.type == "image" then
-                local image = getImage(cardBgAsset.path)
-                if image then
-                    love.graphics.setColor(1, 1, 1, 1)
-                    love.graphics.draw(image, cx, cy, 0, cardRect.width / image:getWidth(), cardRect.height / image:getHeight())
-                else
-                    love.graphics.setColor(colorFrom(cardBgAsset))
-                    love.graphics.rectangle("fill", cx, cy, cardRect.width, cardRect.height, 10, 10)
-                end
-            else
-                love.graphics.setColor(colorFrom(cardBgAsset))
-                love.graphics.rectangle("fill", cx, cy, cardRect.width, cardRect.height, 10, 10)
-            end
+            -- Peek card: background only (aspect-ratio preserved).
+            drawAssetToRect(cardBgAsset, { x = cx, y = cy, width = cardRect.width, height = cardRect.height })
         end
     end
 
