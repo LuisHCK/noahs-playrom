@@ -21,8 +21,7 @@ function state.create(context)
             object = card.object,
             key = card.key,
             spriteIndex = spriteIndexByKey[card.key],
-            isFront = true,
-            playedAutoLetter = false
+            isFront = true
         }
     end
 
@@ -52,10 +51,7 @@ function state.navigate(s, direction)
     end
     local total = #s.deck
     s.currentIndex = ((s.currentIndex - 1 + direction + total) % total) + 1
-    local card = s.deck[s.currentIndex]
-    if not card.playedAutoLetter then
-        s.pendingAutoLetter = card
-    end
+    s.pendingAutoLetter = s.deck[s.currentIndex]
     s.swipeAnim.active = true
     s.swipeAnim.progress = 0
     s.swipeAnim.direction = direction
@@ -95,12 +91,10 @@ function state.update(s, dt)
         s.swipeAnim.progress = math.min(s.swipeAnim.progress + dt / SWIPE_ANIM_DURATION, 1)
         if s.swipeAnim.progress >= 1 then
             s.swipeAnim.active = false
+            local card = s.pendingAutoLetter
+            s.pendingAutoLetter = nil
             s.touchCurrentX = nil
-            if s.pendingAutoLetter then
-                local card = s.pendingAutoLetter
-                s.pendingAutoLetter = nil
-                return nil, card
-            end
+            return nil, card
         end
     end
 

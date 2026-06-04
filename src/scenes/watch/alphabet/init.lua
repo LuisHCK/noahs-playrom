@@ -15,13 +15,11 @@ function scene:load(context)
 
     audio.playIntro(self.state)
 
-    -- Queue letter audio for first card with 1s delay on initial load.
-    local firstCard = self.state.deck[1]
-    firstCard.playedAutoLetter = true
+    -- Queue letter audio for the first card immediately on load.
     self.state.pendingAudio = {
-        card = firstCard,
+        card = self.state.deck[1],
         side = "letter",
-        delay = 1.0
+        delay = 0
     }
 end
 
@@ -52,7 +50,7 @@ function scene:update(dt)
     end
 
     -- Advance flip/swipe animations.
-    local completedCard, autoLetterCard = stateModule.update(self.state, dt)
+    local completedCard, swipeCard = stateModule.update(self.state, dt)
     if completedCard then
         -- Flip completed: queue letter/object audio with short delay.
         self.state.pendingAudio = {
@@ -61,11 +59,10 @@ function scene:update(dt)
             delay = CARD_AUDIO_DELAY
         }
     end
-    if autoLetterCard then
-        -- Swipe landed on a card whose letter hasn't been played yet.
-        autoLetterCard.playedAutoLetter = true
+    if swipeCard then
+        -- Swipe landed: play the letter audio immediately.
         self.state.pendingAudio = {
-            card = autoLetterCard,
+            card = swipeCard,
             side = "letter",
             delay = 0
         }

@@ -132,9 +132,12 @@ function render.draw(stateObj, layout)
             if c.isFront then
                 local hasSprite = false
                 if c.spriteIndex then
-                    local x, y, dw, dh = fitSizeInRect(letterSheet.spriteWidth, letterSheet.spriteHeight, cardRect.width, cardRect.height)
+                    local sw, sh = cardRect.width * 0.7, cardRect.height * 0.7
+                    local x, y, dw, dh = fitSizeInRect(letterSheet.spriteWidth, letterSheet.spriteHeight, sw, sh)
+                    local ox = (cardRect.width - sw) * 0.5
+                    local oy = (cardRect.height - sh) * 0.5
                     love.graphics.setColor(1, 1, 1, 1)
-                    hasSprite = letterSheet:drawByIndex(c.spriteIndex, x, y, dw, dh)
+                    hasSprite = letterSheet:drawByIndex(c.spriteIndex, ox + x, oy + y, dw, dh)
                 end
                 if not hasSprite then
                     love.graphics.setColor(0.18, 0.14, 0.1, 1)
@@ -143,10 +146,12 @@ function render.draw(stateObj, layout)
             else
                 local hasSprite = false
                 if objectSheet and c.spriteIndex then
-                    local insX, insY, insW, insH = insetRect(cardRect.width, cardRect.height, 0.82)
+                    local sw, sh = cardRect.width * 0.7, cardRect.height * 0.7
+                    local insX, insY, insW, insH = insetRect(sw, sh, 0.82)
+                    local ox, oy = (cardRect.width - sw) * 0.5, (cardRect.height - sh) * 0.5
                     local x, y, dw, dh = fitSizeInRect(objectSheet.spriteWidth, objectSheet.spriteHeight, insW, insH)
                     love.graphics.setColor(1, 1, 1, 1)
-                    hasSprite = objectSheet:drawByIndex(c.spriteIndex, insX + x, insY + y, dw, dh)
+                    hasSprite = objectSheet:drawByIndex(c.spriteIndex, ox + insX + x, oy + insY + y, dw, dh)
                 end
                 if not hasSprite then
                     love.graphics.setColor(0.18, 0.14, 0.1, 1)
