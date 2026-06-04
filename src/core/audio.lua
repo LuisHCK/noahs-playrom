@@ -108,6 +108,7 @@ local function getSource(entry)
 
     source:setLooping(entry.loop)
     source:setVolume(entry.volume)
+    source._baseVolume = entry.volume
 
     audio.cache[cacheKey] = source
     return source
@@ -154,6 +155,12 @@ end
 
 function audio:setVolume(v)
     self.volume = math.max(0, math.min(1, v))
+    -- Update all cached sources so currently playing audio responds immediately.
+    for _, source in pairs(self.cache) do
+        if source._baseVolume then
+            source:setVolume(source._baseVolume * self.volume)
+        end
+    end
 end
 
 function audio:getVolume()
