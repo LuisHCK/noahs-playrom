@@ -29,7 +29,7 @@ return {
                 path = "assets/audio/common/bgm/menu.ogg",
                 mode = "stream",
                 loop = true,
-                volume = 0.2
+                volume = 0.6
             }
         }
     },
