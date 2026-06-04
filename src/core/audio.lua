@@ -78,7 +78,7 @@ local function getSource(entry)
     -- Cache by mode+path so stream/static variants do not conflict.
     local cacheKey = string.format("%s::%s", entry.mode, entry.path)
     if audio.cache[cacheKey] then
-        return audio.cache[cacheKey]
+        return audio.cache[cacheKey].source
     end
 
     local path = entry.path
@@ -108,9 +108,8 @@ local function getSource(entry)
 
     source:setLooping(entry.loop)
     source:setVolume(entry.volume)
-    source._baseVolume = entry.volume
 
-    audio.cache[cacheKey] = source
+    audio.cache[cacheKey] = { source = source, baseVolume = entry.volume }
     return source
 end
 
@@ -156,10 +155,8 @@ end
 function audio:setVolume(v)
     self.volume = math.max(0, math.min(1, v))
     -- Update all cached sources so currently playing audio responds immediately.
-    for _, source in pairs(self.cache) do
-        if source._baseVolume then
-            source:setVolume(source._baseVolume * self.volume)
-        end
+    for _, item in pairs(self.cache) do
+        item.source:setVolume(item.baseVolume * self.volume)
     end
 end
 
