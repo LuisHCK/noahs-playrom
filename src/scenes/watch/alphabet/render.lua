@@ -55,19 +55,6 @@ local function wrapIndex(index, total)
     return ((index - 1 + total) % total) + 1
 end
 
-local function drawCardBackground(rect, asset)
-    if asset and asset.type == "image" then
-        local image = getImage(asset.path)
-        if image then
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(image, rect.x, rect.y, 0, rect.width / image:getWidth(), rect.height / image:getHeight())
-            return
-        end
-    end
-    love.graphics.setColor(colorFrom(asset))
-    love.graphics.rectangle("fill", rect.x, rect.y, rect.width, rect.height, 10, 10)
-end
-
 function render.draw(stateObj, layout)
     local viewport = stateObj.context.viewport
     local assets = stateObj.context.assets
@@ -104,12 +91,9 @@ function render.draw(stateObj, layout)
         local c = stateObj.deck[idx]
         local cx = cardRect.x + offset * viewport.width + slideOffset
         local cy = cardRect.y
-        local bgRect = { x = cx, y = cy, width = cardRect.width, height = cardRect.height }
 
-        drawCardBackground(bgRect, cardBgAsset)
-
-        -- Only draw detailed card for the current one.
         if idx == stateObj.currentIndex then
+            -- Current card: everything flips together inside the transform.
             local scaleX = 1
             if stateObj.flip.active then
                 local progress = stateObj.flip.time / stateObj.flip.duration
@@ -127,6 +111,21 @@ function render.draw(stateObj, layout)
             love.graphics.translate(centerX, centerY)
             love.graphics.scale(scaleX, 1)
             love.graphics.translate(-cardRect.width * 0.5, -cardRect.height * 0.5)
+
+            -- Card background.
+            if cardBgAsset and cardBgAsset.type == "image" then
+                local image = getImage(cardBgAsset.path)
+                if image then
+                    love.graphics.setColor(1, 1, 1, 1)
+                    love.graphics.draw(image, 0, 0, 0, cardRect.width / image:getWidth(), cardRect.height / image:getHeight())
+                else
+                    love.graphics.setColor(colorFrom(cardBgAsset))
+                    love.graphics.rectangle("fill", 0, 0, cardRect.width, cardRect.height, 10, 10)
+                end
+            else
+                love.graphics.setColor(colorFrom(cardBgAsset))
+                love.graphics.rectangle("fill", 0, 0, cardRect.width, cardRect.height, 10, 10)
+            end
 
             if c.isFront then
                 local hasSprite = false
@@ -154,6 +153,21 @@ function render.draw(stateObj, layout)
             end
 
             love.graphics.pop()
+        else
+            -- Peek card: background only.
+            if cardBgAsset and cardBgAsset.type == "image" then
+                local image = getImage(cardBgAsset.path)
+                if image then
+                    love.graphics.setColor(1, 1, 1, 1)
+                    love.graphics.draw(image, cx, cy, 0, cardRect.width / image:getWidth(), cardRect.height / image:getHeight())
+                else
+                    love.graphics.setColor(colorFrom(cardBgAsset))
+                    love.graphics.rectangle("fill", cx, cy, cardRect.width, cardRect.height, 10, 10)
+                end
+            else
+                love.graphics.setColor(colorFrom(cardBgAsset))
+                love.graphics.rectangle("fill", cx, cy, cardRect.width, cardRect.height, 10, 10)
+            end
         end
     end
 
