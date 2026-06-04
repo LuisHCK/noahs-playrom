@@ -12,7 +12,7 @@ function scene:load(context)
     self.layout = layout.build(context.viewport)
 
     -- Store initial volume on the state.
-    self.state = { volume = context.audio:getVolume() }
+    self.state = { volume = context.audio:getVolume(), context = context }
 
     self.viewportSnapshot = { w = context.viewport.width, h = context.viewport.height }
     context.audio:play("common.bgm.menu")
