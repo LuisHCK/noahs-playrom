@@ -32,4 +32,9 @@ function fonts:get(name, size)
     return font
 end
 
+function fonts:getForViewport(viewport, name, fraction)
+    local size = math.max(10, math.floor(viewport.height * fraction))
+    return self:get(name, size)
+end
+
 return fonts

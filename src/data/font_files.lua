@@ -1,4 +1,4 @@
 return {
-    cardLetter = "assets/fonts/cabin-sketch-regular.ttf",
+    cardLetter = "assets/fonts/fredoka-one.one-regular.ttf",
     uiDefault = "assets/fonts/Cabin_Sketch,Fredoka/fredoka-semibold.ttf"
 }

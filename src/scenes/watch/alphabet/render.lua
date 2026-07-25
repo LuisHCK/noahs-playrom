@@ -1,3 +1,4 @@
+local drawUtils = require("src.ui.draw_utils")
 local Spritesheet = require("src.core.spritesheet")
 
 local render = {}
@@ -5,21 +6,6 @@ local alphabetSpritesheet = nil
 local objectsSpanishSpritesheet = nil
 local BACK_FILL = { 0.9, 0.85, 0.75, 1 }
 local BACK_BORDER = { 0.1, 0.1, 0.1, 1 }
-local imageCache = {}
-
-local function getImage(path)
-    if not path then return nil end
-    if imageCache[path] ~= nil then return imageCache[path] end
-    if not love.filesystem.getInfo(path) then imageCache[path] = false; return nil end
-    local ok, img = pcall(love.graphics.newImage, path)
-    imageCache[path] = ok and img or false
-    return ok and img or nil
-end
-
-local function colorFrom(asset)
-    if asset and asset.type == "color" then return asset.value end
-    return { 1, 1, 1, 1 }
-end
 
 local function getAlphabetSpritesheet()
     if alphabetSpritesheet ~= nil then return alphabetSpritesheet end
@@ -38,25 +24,6 @@ local function getObjectsSpritesheet(language)
         columns = 4, rows = 7, spriteWidth = 125, spriteHeight = 115
     })
     return objectsSpanishSpritesheet
-end
-
-local function fitSizeInRect(contentW, contentH, rectW, rectH)
-    local scale = math.min(rectW / contentW, rectH / contentH)
-    return (rectW - contentW * scale) * 0.5, (rectH - contentH * scale) * 0.5, contentW * scale, contentH * scale
-end
-
-local function drawAssetToRect(asset, rect)
-    if asset and asset.type == "image" then
-        local image = getImage(asset.path)
-        if image then
-            local x, y, dw, dh = fitSizeInRect(image:getWidth(), image:getHeight(), rect.width, rect.height)
-            love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(image, rect.x + x, rect.y + y, 0, dw / image:getWidth(), dh / image:getHeight())
-            return
-        end
-    end
-    love.graphics.setColor(colorFrom(asset))
-    love.graphics.rectangle("fill", rect.x, rect.y, rect.width, rect.height, 10, 10)
 end
 
 local function insetRect(rectW, rectH, factor)
@@ -89,6 +56,7 @@ function render.draw(stateObj, layout)
     love.graphics.setColor(BACK_BORDER)
     love.graphics.rectangle("line", bb.x, bb.y, bb.width, bb.height, 8, 8)
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
+    love.graphics.setFont(stateObj.context.fonts:getForViewport(viewport, "cardLetter", 0.055))
     love.graphics.printf("←", bb.x, bb.y + (bb.height - 30) * 0.5, bb.width, "center")
 
     -- Compute slide offset for card.
@@ -127,13 +95,13 @@ function render.draw(stateObj, layout)
             love.graphics.translate(-cardRect.width * 0.5, -cardRect.height * 0.5)
 
             -- Card background (aspect-ratio preserved).
-            drawAssetToRect(cardBgAsset, { x = 0, y = 0, width = cardRect.width, height = cardRect.height })
+            drawUtils.drawAssetToRect(cardBgAsset, { x = 0, y = 0, width = cardRect.width, height = cardRect.height })
 
             if c.isFront then
                 local hasSprite = false
                 if c.spriteIndex then
                     local sw, sh = cardRect.width * 0.7, cardRect.height * 0.7
-                    local x, y, dw, dh = fitSizeInRect(letterSheet.spriteWidth, letterSheet.spriteHeight, sw, sh)
+                    local x, y, dw, dh = drawUtils.fitSizeInRect(letterSheet.spriteWidth, letterSheet.spriteHeight, sw, sh)
                     local ox = (cardRect.width - sw) * 0.5
                     local oy = (cardRect.height - sh) * 0.5
                     love.graphics.setColor(1, 1, 1, 1)
@@ -141,6 +109,7 @@ function render.draw(stateObj, layout)
                 end
                 if not hasSprite then
                     love.graphics.setColor(0.18, 0.14, 0.1, 1)
+                    love.graphics.setFont(stateObj.context.fonts:getForViewport(viewport, "cardLetter", 0.07))
                     love.graphics.printf(c.letter, 0, cardRect.height * 0.1, cardRect.width, "center")
                 end
             else
@@ -149,12 +118,13 @@ function render.draw(stateObj, layout)
                     local sw, sh = cardRect.width * 0.7, cardRect.height * 0.7
                     local insX, insY, insW, insH = insetRect(sw, sh, 0.82)
                     local ox, oy = (cardRect.width - sw) * 0.5, (cardRect.height - sh) * 0.5
-                    local x, y, dw, dh = fitSizeInRect(objectSheet.spriteWidth, objectSheet.spriteHeight, insW, insH)
+                    local x, y, dw, dh = drawUtils.fitSizeInRect(objectSheet.spriteWidth, objectSheet.spriteHeight, insW, insH)
                     love.graphics.setColor(1, 1, 1, 1)
                     hasSprite = objectSheet:drawByIndex(c.spriteIndex, ox + insX + x, oy + insY + y, dw, dh)
                 end
                 if not hasSprite then
                     love.graphics.setColor(0.18, 0.14, 0.1, 1)
+                    love.graphics.setFont(stateObj.context.fonts:getForViewport(viewport, "cardLetter", 0.04))
                     love.graphics.printf(c.object, 4, cardRect.height * 0.35, cardRect.width - 8, "center")
                 end
             end
@@ -162,12 +132,13 @@ function render.draw(stateObj, layout)
             love.graphics.pop()
         else
             -- Peek card: background only (aspect-ratio preserved).
-            drawAssetToRect(cardBgAsset, { x = cx, y = cy, width = cardRect.width, height = cardRect.height })
+            drawUtils.drawAssetToRect(cardBgAsset, { x = cx, y = cy, width = cardRect.width, height = cardRect.height })
         end
     end
 
     -- Indicator: "N / 27".
     love.graphics.setColor(0.1, 0.1, 0.1, 1)
+    love.graphics.setFont(stateObj.context.fonts:getForViewport(viewport, "cardLetter", 0.04))
     love.graphics.printf(stateObj.currentIndex .. " / " .. total, layout.indicatorRect.x, layout.indicatorRect.y, layout.indicatorRect.width, "center")
 end
 
