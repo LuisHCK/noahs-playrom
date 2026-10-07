@@ -1,36 +1,8 @@
-local decks = require("src.data.content.alphabet_decks")
+local decks = require("src.modules.alphabet.content.decks")
+local sprites = require("src.data.sprites")
 
 local state = {}
 local FLIP_DURATION = 0.45
-local spriteIndexByKey = {
-    a = 1,
-    b = 2,
-    c = 3,
-    d = 4,
-    e = 5,
-    f = 6,
-    g = 7,
-    h = 8,
-    i = 9,
-    j = 10,
-    k = 11,
-    l = 12,
-    m = 13,
-    n = 14,
-    ntilde = 15,
-    o = 16,
-    p = 17,
-    q = 18,
-    r = 19,
-    s = 20,
-    t = 21,
-    u = 22,
-    v = 23,
-    w = 24,
-    x = 25,
-    y = 26,
-    z = 27
-}
 
 local function buildGrid(deck, content)
     local columns = 9
@@ -51,7 +23,7 @@ local function buildGrid(deck, content)
             letter = card.letter,
             object = card.object,
             key = card.key,
-            spriteIndex = spriteIndexByKey[card.key],
+            spriteIndex = sprites.indexByKey[card.key],
             isFront = true,
             flip = {
                 active = false,

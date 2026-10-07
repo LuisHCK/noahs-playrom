@@ -69,10 +69,4 @@ function menu:touchmoved(_, x, y)
     input.press(self.state, x, y)
 end
 
-function menu:keypressed(key)
-    if key == "p" then
-        self.state.toggleAssetProfile()
-    end
-end
-
 return menu

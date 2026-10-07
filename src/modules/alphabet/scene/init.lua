@@ -1,11 +1,10 @@
-local Button = require("src.ui.button")
-local stateFactory = require("src.scenes.modules.alphabet_scene.state")
-local input = require("src.scenes.modules.alphabet_scene.input")
-local render = require("src.scenes.modules.alphabet_scene.render")
-local audio = require("src.scenes.modules.alphabet_scene.audio")
+local scene_shell = require("src.core.scene_shell")
+local stateFactory = require("src.modules.alphabet.scene.state")
+local input = require("src.modules.alphabet.scene.input")
+local render = require("src.modules.alphabet.scene.render")
+local audio = require("src.modules.alphabet.scene.audio")
 
 local scene = {}
-local EDGE_MARGIN = 32
 -- Delay card voice slightly so it does not overlap the flip SFX.
 local CARD_AUDIO_DELAY = 0.18
 
@@ -24,16 +23,9 @@ end
 function scene:load(context)
     -- Create scene state and hook the back button to return to main menu.
     self.state = stateFactory.create(context)
-    self.state.backButton = Button.new({
-        id = "back",
-        x = EDGE_MARGIN,
-        y = EDGE_MARGIN,
-        width = 140,
-        height = 50,
-        onClick = function()
-            self.setScene("main_menu", context)
-        end
-    })
+    self.state.backButton = scene_shell.buildBackButton(function()
+        self.setScene("main_menu", context)
+    end)
 
     -- Intro audio is played once when entering the scene.
     audio.playIntro(self.state)

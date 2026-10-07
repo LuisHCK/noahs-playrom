@@ -35,12 +35,6 @@ function layout.build(viewport)
     return {
         titleX = content.x + 80,
         titleY = content.y + 50,
-        profileButton = {
-            x = viewport.width - edgeMargin - 140 - 90 - 12,
-            y = edgeMargin,
-            width = 140,
-            height = 48
-        },
         languageButton = {
             x = viewport.width - edgeMargin - 90,
             y = edgeMargin,

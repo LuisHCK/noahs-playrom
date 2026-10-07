@@ -2,14 +2,13 @@
 
 ## Project overview
 
-Love2D 11.5+ educational game with modular scenes, bilingual EN/ES support, asset profile swapping (prototype/final), viewport letterboxing (1280x720 base), optional watch-mode UI, and Android deployment.
+Love2D 11.5+ educational game with a drop-in module system, bilingual EN/ES support, asset manifest key mapping, viewport letterboxing (1280x720 base), and Android deployment.
 
 Entry points: `main.lua`, `conf.lua`.
 
 ## Run commands
 
 - Run game: `love .`
-- Watch mode preview: Set `deviceProfile = "watch"` in `src/core/config.lua`, then `love . --window-width 450 --window-height 450`
 - Package .love: `scripts/pack-love.sh` (creates `dist/noahs-playroom.love`)
 - Android: `scripts/setup-android.sh`, then open `android/` in Android Studio
 
@@ -18,10 +17,11 @@ Entry points: `main.lua`, `conf.lua`.
 ```
 main.lua                 — Wires love callbacks → app
 conf.lua                 — Love2D config (window, identity)
-src/core/                — App bootstrap, viewport, scene mgr, i18n, storage, assets, audio, fonts
-src/scenes/              — Boot, main menu, module scenes (alphabet, animals, numbers, universe), watch variants
-src/ui/                  — Reusable button, grid, placeholder card
-src/data/                — Locales, content definitions, audio maps, asset manifest/profiles
+src/core/                — App bootstrap, viewport, scene mgr, module registry, i18n, storage, assets, audio, fonts, scene shell, images
+src/modules/             — Game modules (alphabet, farm, numbers, universe); each has module.lua + scene
+src/scenes/              — Boot and main menu
+src/ui/                  — Reusable button, grid, draw utils, placeholder card
+src/data/                — Module manifest, sprites, locales, audio files, asset manifest, font files
 libs/scenery/            — Scene manager submodule
 assets/                  — Images, audio, fonts
 ```
@@ -37,6 +37,9 @@ assets/                  — Images, audio, fonts
 - UI coordinates are virtual (viewport-scaled); convert screen input with `viewport:toVirtual(x, y)`
 - State is separate from rendering: scenes delegate to `state.lua`, `render.lua`, `input.lua`, `audio.lua` sub-modules
 - Reusable UI elements use a Button class with `press/release/contains` methods
+- Games are registered through `src/data/modules_manifest.lua`; read descriptors via `require("src.core.modules")` (`list`/`get`/`sceneEntries`). Never hardcode module order or asset keys
+- Decoded images go through `src/core/images.lua`; rect hit-tests through `draw_utils.contains`
+- Shared scene chrome (back button, background, titles) lives in `src/core/scene_shell.lua`; WIP games use `src/core/placeholder_scene.lua`
 
 ## Code style
 
@@ -46,8 +49,17 @@ assets/                  — Images, audio, fonts
 - Dot-path requires: `require("src.core.assets")`
 - Class-like patterns use `setmetatable` + `__index` or factory functions returning a table
 - Add no comments unless the logic is non-obvious
-- `src/core/config.lua` is the single source of truth for global defaults (deviceProfile, language, asset profile)
+- `src/core/config.lua` is the single source of truth for global defaults (language)
 - Persisted settings are written to `settings.lua` via `src/core/storage.lua`
+
+## Adding a module
+
+1. Create `src/modules/<id>/module.lua` with `{ id, enabled, scene, scenePath }` (optionally `cardAssetKey`, `audioPrefix`).
+2. Create the scene at `scenePath` (a `scene/` folder with `init/state/input/render/audio`, or a single `scene.lua`). Placeholders delegate to `require("src.core.placeholder_scene").build("<id>")`.
+3. Add the descriptor path to `src/data/modules_manifest.lua` (list order is display order).
+4. Add `modules.<id>` to `src/data/locales/en.lua` and `es.lua`.
+5. Add assets to `src/data/asset_manifest.lua` as needed.
+6. Add audio under `src/data/audio_files.lua` as needed.
 
 ## Git conventions
 
@@ -57,7 +69,12 @@ assets/                  — Images, audio, fonts
 
 ## Testing
 
-- No test framework set up yet. Manually verify with `love .` after changes.
+- Run all checks: `python3 scripts/verify.py all` (or `syntax`, `sprites`, `logic`, `smoke`).
+  - `syntax` — every `src/**/*.lua` (plus `main.lua`/`conf.lua`) parses in LuaJIT.
+  - `sprites` — sheets in `src/data/sprites.lua` match their grid config; dots sheets are dot-counted.
+  - `logic` / `smoke` — LuaJIT stub harnesses in `scripts/tests/`.
+- In opencode, the `verify` tool runs the same script (restart opencode after first adding it).
+- `love .` is still required for visual/interaction checks (Love2D not available in CI).
 
 ## Image inspection
 
@@ -66,10 +83,17 @@ assets/                  — Images, audio, fonts
 
 ## Important files
 
-- `src/core/config.lua` — device profile, language, asset profile defaults
+- `src/core/config.lua` — language defaults
 - `src/core/app.lua` — app bootstrap, wires viewport, scene manager, services
-- `src/scenes/boot.lua` — entry scene that routes to main_menu or watch_main_menu
-- `src/data/asset_profiles/` — swap visual assets between prototype and final
+- `src/core/modules.lua` — module registry (manifest loader)
+- `src/data/modules_manifest.lua` — ordered list of module descriptors
+- `src/scenes/boot.lua` — entry scene that routes to main_menu
+- `src/core/scene_shell.lua` — shared scene chrome (back button, background, titles)
+- `src/core/placeholder_scene.lua` — WIP scene factory for placeholder modules
+- `src/data/asset_manifest.lua` — key-to-asset mappings (images/colors)
 - `src/data/locales/` — translation strings
 - `src/data/audio_files.lua` — audio file mappings with language/common fallback
+- `scripts/verify.py` — project verifier (syntax, sprites, LuaJIT harnesses)
+- `scripts/tests/` — LuaJIT stub harnesses run by the verifier
+- `.opencode/tools/verify.ts` — opencode `verify` tool wrapping `scripts/verify.py`
 - `.gitignore` — excludes build artifacts, .DS_Store, IDE files, luac

@@ -23,7 +23,6 @@ local function buildContext()
         saveSettings = function()
             storage:save({
                 language = i18n:getLanguage(),
-                assetProfile = assets:getProfile(),
                 volume = audio:getVolume()
             })
         end
@@ -34,7 +33,6 @@ function app:load()
     -- Restore persisted user preferences.
     self.settings = storage:load()
     i18n:setLanguage(self.settings.language or config.defaultLanguage)
-    assets:setProfile(self.settings.assetProfile or config.defaultAssetProfile)
     audio:setVolume(tonumber(self.settings.volume) or 1)
 
     viewport:update(love.graphics.getDimensions())
@@ -76,6 +74,13 @@ function app:mousereleased(x, y, button, istouch, presses)
     end
 end
 
+function app:mousemoved(x, y, dx, dy, istouch)
+    local vx, vy = viewport:toVirtual(x, y)
+    if self.scenery.mousemoved then
+        self.scenery:mousemoved(vx, vy, dx, dy, istouch)
+    end
+end
+
 function app:touchpressed(id, x, y, dx, dy, pressure)
     local windowW, windowH = love.graphics.getDimensions()
     -- Support both normalized [0..1] and pixel touch coordinates.
@@ -113,6 +118,12 @@ end
 function app:keypressed(key, scancode, isrepeat)
     if self.scenery.keypressed then
         self.scenery:keypressed(key, scancode, isrepeat)
+    end
+end
+
+function app:wheelmoved(dx, dy)
+    if self.scenery.wheelmoved then
+        self.scenery:wheelmoved(dx, dy)
     end
 end
 

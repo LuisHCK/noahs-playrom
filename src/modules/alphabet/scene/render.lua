@@ -1,7 +1,9 @@
 local Spritesheet = require("src.core.spritesheet")
+local drawUtils = require("src.ui.draw_utils")
+local scene_shell = require("src.core.scene_shell")
+local sprites = require("src.data.sprites")
 
 local render = {}
-local imageCache = {}
 local alphabetSpritesheet = nil
 local objectsSpanishSpritesheet = nil
 
@@ -11,13 +13,7 @@ local function getAlphabetSpritesheet()
         return alphabetSpritesheet
     end
 
-    alphabetSpritesheet = Spritesheet.new({
-        path = "assets/images/spritesheets/alphabet-spritesheet.png",
-        columns = 1,
-        rows = 27,
-        spriteWidth = 128,
-        spriteHeight = 130
-    })
+    alphabetSpritesheet = Spritesheet.new(sprites.sheets.alphabet)
 
     return alphabetSpritesheet
 end
@@ -32,52 +28,9 @@ local function getObjectsSpritesheet(language)
         return objectsSpanishSpritesheet
     end
 
-    objectsSpanishSpritesheet = Spritesheet.new({
-        path = "assets/images/spritesheets/objects-spanish.png",
-        columns = 4,
-        rows = 7,
-        spriteWidth = 125,
-        spriteHeight = 115
-    })
+    objectsSpanishSpritesheet = Spritesheet.new(sprites.sheets.objectsSpanish)
 
     return objectsSpanishSpritesheet
-end
-
-local function colorFrom(asset)
-    if asset and asset.type == "color" then
-        return asset.value
-    end
-    return { 1, 1, 1, 1 }
-end
-
-local function getImage(path)
-    if not path then
-        return nil
-    end
-
-    -- Cache decoded images to avoid per-frame reloads.
-    if imageCache[path] ~= nil then
-        return imageCache[path]
-    end
-
-    if not love.filesystem.getInfo(path) then
-        imageCache[path] = false
-        return nil
-    end
-
-    local ok, image = pcall(love.graphics.newImage, path)
-    imageCache[path] = ok and image or false
-    return ok and image or nil
-end
-
-local function fitSizeInRect(contentW, contentH, rectW, rectH)
-    -- Fit content into a target box while preserving aspect ratio.
-    local scale = math.min(rectW / contentW, rectH / contentH)
-    local drawW = contentW * scale
-    local drawH = contentH * scale
-    local x = (rectW - drawW) * 0.5
-    local y = (rectH - drawH) * 0.5
-    return x, y, drawW, drawH
 end
 
 local function insetRect(rectW, rectH, factor)
@@ -99,25 +52,14 @@ function render.draw(state)
     local letterSheet = getAlphabetSpritesheet()
     local objectSheet = getObjectsSpritesheet(state.language)
 
-    local sceneBackground = getImage("assets/images/backgrounds/background-2.jpg")
-    if sceneBackground then
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(sceneBackground, 0, 0, 0, viewport.width / sceneBackground:getWidth(), viewport.height / sceneBackground:getHeight())
-    else
-        love.graphics.setColor(colorFrom(assets:get("panelBackground")))
-        love.graphics.rectangle("fill", 0, 0, viewport.width, viewport.height)
-    end
+    scene_shell.drawBackground(
+        { type = "image", path = "assets/images/backgrounds/background-2.jpg" },
+        viewport,
+        assets:get("panelBackground")
+    )
 
-    love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.printf(moduleData.title or "Alphabet", content.x, content.y + 45, content.width, "center")
-    love.graphics.printf(moduleData.subtitle or "", content.x, content.y + 80, content.width, "center")
-
-    local back = state.backButton
-    love.graphics.setColor(0.9, 0.85, 0.75, 1)
-    love.graphics.rectangle("fill", back.x, back.y, back.width, back.height, 10, 10)
-    love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.rectangle("line", back.x, back.y, back.width, back.height, 10, 10)
-    love.graphics.printf(i18n:t("back"), back.x, back.y + 16, back.width, "center")
+    scene_shell.drawTitle(moduleData.title or "Alphabet", moduleData.subtitle or "", content, 45, 80)
+    scene_shell.drawBackButton(state.backButton, i18n)
 
     for _, card in ipairs(state.cards) do
         local rect = card.rect
@@ -142,7 +84,7 @@ function render.draw(state)
 
         -- 
         if cardAsset and cardAsset.type == "image" then
-            local image = getImage(cardAsset.path)
+            local image = drawUtils.getImage(cardAsset.path)
             if image then
                 love.graphics.setColor(1, 1, 1, 1)
                 love.graphics.draw(image, 0, 0, 0, rect.width / image:getWidth(), rect.height / image:getHeight())
@@ -151,7 +93,7 @@ function render.draw(state)
                 love.graphics.rectangle("fill", 0, 0, rect.width, rect.height, 10, 10)
             end
         else
-            love.graphics.setColor(colorFrom(cardAsset))
+            love.graphics.setColor(drawUtils.colorFrom(cardAsset))
             love.graphics.rectangle("fill", 0, 0, rect.width, rect.height, 10, 10)
         end
 
@@ -159,7 +101,7 @@ function render.draw(state)
             -- Front side: letter sprite (fallback to text if unavailable).
             local hasSprite = false
             if card.spriteIndex then
-                local x, y, drawW, drawH = fitSizeInRect(letterSheet.spriteWidth, letterSheet.spriteHeight, rect.width, rect.height)
+                local x, y, drawW, drawH = drawUtils.fitSizeInRect(letterSheet.spriteWidth, letterSheet.spriteHeight, rect.width, rect.height)
                 love.graphics.setColor(1, 1, 1, 1)
                 hasSprite = letterSheet:drawByIndex(card.spriteIndex, x, y, drawW, drawH)
             end
@@ -173,7 +115,7 @@ function render.draw(state)
             local hasSprite = false
             if objectSheet and card.spriteIndex then
                 local insetX, insetY, insetW, insetH = insetRect(rect.width, rect.height, 0.82)
-                local x, y, drawW, drawH = fitSizeInRect(objectSheet.spriteWidth, objectSheet.spriteHeight, insetW, insetH)
+                local x, y, drawW, drawH = drawUtils.fitSizeInRect(objectSheet.spriteWidth, objectSheet.spriteHeight, insetW, insetH)
                 love.graphics.setColor(1, 1, 1, 1)
                 hasSprite = objectSheet:drawByIndex(card.spriteIndex, insetX + x, insetY + y, drawW, drawH)
             end

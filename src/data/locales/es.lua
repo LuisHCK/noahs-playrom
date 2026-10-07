@@ -9,15 +9,32 @@ return {
             subtitle = "Letras y sonidos",
             cards = { "A", "B", "Ñ" }
         },
-        animals = {
-            title = "Animales",
-            subtitle = "Granja y naturaleza",
-            cards = { "Gato", "Perro", "Pájaro" }
+        farm = {
+            title = "Granja",
+            subtitle = "Animales y sonidos",
+            instruction = "Arrastra para explorar. ¡Toca un animal!",
+            complete = "¡Muy bien!",
+            modes = { explore = "Explorar", learn = "Nombres", find = "Buscar" },
+            findPrompt = "Encuentra: %s",
+            listen = "Escucha... ¿quién es?",
+            animals = {
+                cow = "Vaca",
+                horse = "Caballo",
+                hen = "Gallina",
+                rooster = "Gallo",
+                duck = "Pato",
+                pig = "Cerdo",
+                sheep = "Oveja",
+                dog = "Perro",
+                cat = "Gato"
+            }
         },
         numbers = {
             title = "Números",
             subtitle = "Contar y unir",
-            cards = { "1", "2", "3" }
+            cards = { "1", "2", "3" },
+            instruction = "Arrastra cada número a su grupo",
+            complete = "¡Muy bien!"
         },
         universe = {
             title = "Universo",

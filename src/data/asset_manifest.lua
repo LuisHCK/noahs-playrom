@@ -1,29 +1,33 @@
 return {
-    menuBackground = {
-        fallback = { type = "color", value = { 0.95, 0.9, 0.8, 1 } }
-    },
-    moduleCard = {
-        fallback = { type = "color", value = { 0.78, 0.63, 0.45, 1 } }
-    },
-    moduleCardAlphabet = {
-        fallback = { type = "color", value = { 0.78, 0.63, 0.45, 1 } }
-    },
-    moduleCardAnimals = {
-        fallback = { type = "color", value = { 0.78, 0.63, 0.45, 1 } }
-    },
-    moduleCardNumbers = {
-        fallback = { type = "color", value = { 0.78, 0.63, 0.45, 1 } }
-    },
-    moduleCardUniverse = {
-        fallback = { type = "color", value = { 0.78, 0.63, 0.45, 1 } }
-    },
-    moduleCardPressed = {
-        fallback = { type = "color", value = { 0.68, 0.53, 0.35, 1 } }
-    },
-    panelBackground = {
-        fallback = { type = "color", value = { 0.96, 0.94, 0.9, 1 } }
-    },
-    alphabetCard = {
-        fallback = { type = "color", value = { 0.78, 0.63, 0.45, 1 } }
-    }
+    menuBackground = { type = "image", path = "assets/images/final/menu_background.jpg" },
+    moduleCard = { type = "image", path = "assets/images/final/alphabet.png" },
+    moduleCardAlphabet = { type = "image", path = "assets/images/final/alphabet.png" },
+    moduleCardFarm = { type = "image", path = "assets/images/final/animals.png" },
+    moduleCardNumbers = { type = "image", path = "assets/images/final/numbers.png" },
+    moduleCardUniverse = { type = "image", path = "assets/images/final/universe.png" },
+    moduleCardPressed = { type = "color", value = { 0.68, 0.53, 0.35, 1 } },
+    panelBackground = { type = "color", value = { 0.96, 0.94, 0.9, 1 } },
+    farmSky = { type = "image", path = "assets/images/final/farm-sky.png" },
+    farmFar = { type = "image", path = "assets/images/final/farm-far.png" },
+    farmGround = { type = "image", path = "assets/images/final/farm-ground.png" },
+    farmBanner = { type = "image", path = "assets/images/final/ui-banner.png" },
+    farmBarn = { type = "image", path = "assets/images/final/barn.png" },
+    farmStable = { type = "image", path = "assets/images/final/stable.png" },
+    farmCoop = { type = "image", path = "assets/images/final/coop.png" },
+    farmPond = { type = "image", path = "assets/images/final/pond.png" },
+    farmMudPen = { type = "image", path = "assets/images/final/mud-pen.png" },
+    farmField = { type = "image", path = "assets/images/final/field.png" },
+    farmDoghouse = { type = "image", path = "assets/images/final/dog-house.png" },
+    farmCottage = { type = "image", path = "assets/images/final/cottage.png" },
+    farmWindmill = { type = "image", path = "assets/images/final/windmill.png" },
+    farmCow = { type = "image", path = "assets/images/final/cow.png" },
+    farmHorse = { type = "image", path = "assets/images/final/horse.png" },
+    farmHen = { type = "image", path = "assets/images/final/hen.png" },
+    farmRooster = { type = "image", path = "assets/images/final/rooster.png" },
+    farmDuck = { type = "image", path = "assets/images/final/duck.png" },
+    farmPig = { type = "image", path = "assets/images/final/pig.png" },
+    farmSheep = { type = "image", path = "assets/images/final/sheep.png" },
+    farmDog = { type = "image", path = "assets/images/final/dog.png" },
+    farmCat = { type = "image", path = "assets/images/final/cat.png" },
+    alphabetCard = { type = "image", path = "assets/images/final/card.png" }
 }

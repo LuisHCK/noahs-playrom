@@ -1,3 +1,5 @@
+local drawUtils = require("src.ui.draw_utils")
+
 local button = {}
 button.__index = button
 
@@ -15,7 +17,7 @@ function button.new(params)
 end
 
 function button:contains(px, py)
-    return px >= self.x and px <= self.x + self.width and py >= self.y and py <= self.y + self.height
+    return drawUtils.contains(self, px, py)
 end
 
 function button:press(px, py)

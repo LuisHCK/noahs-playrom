@@ -4,7 +4,6 @@ local function forEachButton(state, callback)
     for _, button in ipairs(state.moduleButtons) do
         callback(button)
     end
-    callback(state.profileButton)
     callback(state.languageButton)
 end
 

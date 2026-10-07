@@ -27,6 +27,10 @@ function love.mousereleased(x, y, button, istouch, presses)
     app:mousereleased(x, y, button, istouch, presses)
 end
 
+function love.mousemoved(x, y, dx, dy, istouch)
+    app:mousemoved(x, y, dx, dy, istouch)
+end
+
 function love.touchpressed(id, x, y, dx, dy, pressure)
     app:touchpressed(id, x, y, dx, dy, pressure)
 end
@@ -41,4 +45,8 @@ end
 
 function love.keypressed(key, scancode, isrepeat)
     app:keypressed(key, scancode, isrepeat)
+end
+
+function love.wheelmoved(dx, dy)
+    app:wheelmoved(dx, dy)
 end

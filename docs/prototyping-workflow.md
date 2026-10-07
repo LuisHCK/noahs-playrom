@@ -7,11 +7,11 @@
 - Keep translatable content in locale files only
 - Keep font mapping in `src/data/font_files.lua` and load via `src/core/fonts.lua`
 
-## Swap to final assets
+## Assets
 
-1. Add final files under `assets/images/final`
-2. Update key mappings in `src/data/asset_profiles/final.lua`
-3. Set `defaultAssetProfile = "final"` in `src/core/config.lua` (or saved setting)
+1. Add image files under `assets/images/final` (or another folder)
+2. Map keys to files in `src/data/asset_manifest.lua`
+3. Request assets by key through `src/core/assets.lua`
 
 ## Audio placeholders and swap
 
@@ -30,7 +30,7 @@
 
 ## Add a new module
 
-1. Add localized content in `src/data/locales/en.lua` and `src/data/locales/es.lua`
-2. Add optional audio keys in `src/data/audio_map.lua`
-3. Add scene entry in `src/core/scene_manager.lua`
-4. Add menu module metadata in `src/data/content/modules.lua`
+1. Create `src/modules/<id>/module.lua` and its scene
+2. Add the descriptor path to `src/data/modules_manifest.lua`
+3. Add localized content in `src/data/locales/en.lua` and `src/data/locales/es.lua`
+4. Add assets in `src/data/asset_manifest.lua` and audio in `src/data/audio_files.lua`

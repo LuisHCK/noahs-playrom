@@ -1,14 +1,12 @@
+local drawUtils = require("src.ui.draw_utils")
+
 local input = {}
 
 local TAP_THRESHOLD = 25
 
-local function contains(rect, x, y)
-    return x >= rect.x and x <= rect.x + rect.width and y >= rect.y and y <= rect.y + rect.height
-end
-
 local function findCardIndex(state, x, y)
     for index, card in ipairs(state.cards) do
-        if contains(card.rect, x, y) then
+        if drawUtils.contains(card.rect, x, y) then
             return index
         end
     end
@@ -57,8 +55,7 @@ function input.finish(state, pointerId, x, y)
 end
 
 function input.isBackPressed(state, x, y)
-    local back = state.backButton
-    return x >= back.x and x <= back.x + back.width and y >= back.y and y <= back.y + back.height
+    return drawUtils.contains(state.backButton, x, y)
 end
 
 return input

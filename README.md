@@ -13,21 +13,6 @@ love .
 
 Default baseline resolution is 1280x720 (HD 16:9) with letterbox scaling.
 
-### Watch mode (desktop test)
-
-A parallel watch-optimized UI can be tested on desktop without a smartwatch:
-
-1. Set `deviceProfile = "watch"` in `src/core/config.lua`
-2. Launch with a small square resolution to simulate a watch screen:
-
-```bash
-love . --window-width 450 --window-height 450
-```
-
-3. Or resize the window manually after launch — layouts adapt dynamically.
-
-Watch scenes use `viewport.width` / `viewport.height` directly (not the 16:9 safe zone), so shrinking the window to any small size gives an accurate preview of the watch layout.
-
 ## Package .love
 
 Use the packaging script to generate a clean `.love` archive while respecting `.gitignore`.
@@ -91,20 +76,25 @@ Then open `android/` in Android Studio and run the app. Configuration notes:
 ## Project layout
 
 - `main.lua`, `conf.lua`: app entry and Love config
-- `src/core`: app bootstrap, viewport, scenes, i18n, storage, assets, audio
-- `src/scenes`: boot, modular main menu, alphabet vertical slice, module placeholders
-- `src/ui`: reusable buttons/cards/layout helpers
-- `src/data`: locales, content, audio maps, audio files, asset manifest/profiles
+- `src/core`: app bootstrap, viewport, scene manager, module registry, i18n, storage, assets, audio, fonts, scene shell, images
+- `src/modules`: game modules (`alphabet`, `farm`, `numbers`, `universe`); each has `module.lua` plus a `scene`
+- `src/scenes`: boot and main menu
+- `src/ui`: reusable buttons/cards/draw helpers
+- `src/data`: module manifest, sprites, locales, audio files, asset manifest
 - `libs/scenery`: scene manager
 
-## Asset swapping
+## Adding a module
 
-Active profile is loaded from `settings.lua` or `src/core/config.lua`.
+1. Create `src/modules/<id>/module.lua` with `{ id, enabled, scene, scenePath }`.
+2. Create the scene at `scenePath` (a `scene/` folder or a single `scene.lua`; placeholders delegate to `src/core/placeholder_scene.lua`).
+3. Add the descriptor path to `src/data/modules_manifest.lua` (list order is display order).
+4. Add `modules.<id>` to `src/data/locales/en.lua` and `es.lua`.
+5. Add assets to `src/data/asset_manifest.lua` as needed.
+6. Add audio to `src/data/audio_files.lua` as needed.
 
-- Prototype: `src/data/asset_profiles/prototype.lua`
-- Final: `src/data/asset_profiles/final.lua`
+## Assets
 
-Scenes never use direct asset paths; they request keys through `src/core/assets.lua`.
+Key-to-asset mappings live in `src/data/asset_manifest.lua` (images, colors, or other descriptors). Scenes never use direct asset paths; they request keys through `src/core/assets.lua`.
 
 ## Alphabet vertical slice
 
@@ -115,6 +105,14 @@ Scenes never use direct asset paths; they request keys through `src/core/assets.
 - Audio uses shared assets in `assets/audio/common/*` (SFX/BGM) and language assets in `assets/audio/en/*` + `assets/audio/es/*`
 - Playback routing is key-based via `src/core/audio.lua` and `src/data/audio_files.lua`
 - Recommended: BGM as `OGG` (`stream`), SFX/voice as `WAV` or short `OGG` (`static`)
+
+## Farm (horizontal scroll)
+
+- Long fixed-height panorama (~4 screens). Drag to scroll with inertia; mouse wheel and Left/Right arrows on desktop
+- 9 animals, each at a themed home (barn, stable, coop, pond, mud pen, field, doghouse, cottage) with a windmill in the distance
+- Three modes via the top bar: **Explore** (tap = animal sound), **Names** (tap = spoken name), **Find** (locate the prompted animal)
+- Find mode prompts by sound or written name at random; correct taps advance, wrong taps only shake (no penalty); completing the round celebrates, tap to restart
+- Placeholder-first: procedural animals/structures/parallax and silent audio until files are added at the declared paths (`assets/images/farm/*`, `assets/images/spritesheets/farm-*.png`, `assets/audio/{common,en,es}/farm/*`)
 
 ## Language
 

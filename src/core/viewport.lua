@@ -7,7 +7,8 @@ local viewport = {
     height = config.baseHeight,
     scale = 1,
     offsetX = 0,
-    offsetY = 0
+    offsetY = 0,
+    contentArea = nil
 }
 
 function viewport:update(windowWidth, windowHeight)
@@ -27,6 +28,7 @@ function viewport:update(windowWidth, windowHeight)
 
     self.offsetX = 0
     self.offsetY = 0
+    self.contentArea = nil
 end
 
 function viewport:beginDraw()
@@ -47,12 +49,20 @@ end
 
 function viewport:getContentArea()
     -- Canonical 16:9 region centered inside the adaptive virtual canvas.
-    return {
+    -- Cached because it is read multiple times per frame; callers must not mutate it.
+    local area = self.contentArea
+    if area then
+        return area
+    end
+
+    area = {
         x = (self.width - self.baseWidth) * 0.5,
         y = (self.height - self.baseHeight) * 0.5,
         width = self.baseWidth,
         height = self.baseHeight
     }
+    self.contentArea = area
+    return area
 end
 
 function viewport:isInside(screenX, screenY)

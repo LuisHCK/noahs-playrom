@@ -1,13 +1,14 @@
+local images = require("src.core.images")
+
 local drawUtils = {}
-local imageCache = {}
 
 function drawUtils.getImage(path)
-    if not path then return nil end
-    if imageCache[path] ~= nil then return imageCache[path] end
-    if not love.filesystem.getInfo(path) then imageCache[path] = false; return nil end
-    local ok, img = pcall(love.graphics.newImage, path)
-    imageCache[path] = ok and img or false
-    return ok and img or nil
+    return images.get(path)
+end
+
+function drawUtils.contains(rect, x, y)
+    return x >= rect.x and x <= rect.x + rect.width
+        and y >= rect.y and y <= rect.y + rect.height
 end
 
 function drawUtils.colorFrom(asset)
@@ -22,7 +23,7 @@ end
 
 function drawUtils.drawAssetToRect(asset, rect, radius)
     if asset and asset.type == "image" then
-        local image = drawUtils.getImage(asset.path)
+        local image = images.get(asset.path)
         if image then
             local x, y, dw, dh = drawUtils.fitSizeInRect(image:getWidth(), image:getHeight(), rect.width, rect.height)
             love.graphics.setColor(1, 1, 1, 1)

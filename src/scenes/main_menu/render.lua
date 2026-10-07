@@ -1,38 +1,11 @@
 local placeholderCard = require("src.ui.placeholder_card")
+local drawUtils = require("src.ui.draw_utils")
 
 local render = {}
-local imageCache = {}
-
-local function colorFrom(asset)
-    if asset and asset.type == "color" then
-        return asset.value
-    end
-    return { 1, 1, 1, 1 }
-end
-
-local function getImage(path)
-    if not path then
-        return nil
-    end
-
-    -- Cache decoded images to avoid reloading every frame.
-    if imageCache[path] ~= nil then
-        return imageCache[path]
-    end
-
-    if not love.filesystem.getInfo(path) then
-        imageCache[path] = false
-        return nil
-    end
-
-    local ok, image = pcall(love.graphics.newImage, path)
-    imageCache[path] = ok and image or false
-    return ok and image or nil
-end
 
 local function drawMenuBackground(asset, viewport)
     if asset and asset.type == "image" then
-        local image = getImage(asset.path)
+        local image = drawUtils.getImage(asset.path)
         if image then
             love.graphics.setColor(1, 1, 1, 1)
             love.graphics.draw(image, 0, 0, 0, viewport.width / image:getWidth(), viewport.height / image:getHeight())
@@ -40,7 +13,7 @@ local function drawMenuBackground(asset, viewport)
         end
     end
 
-    love.graphics.setColor(colorFrom(asset))
+    love.graphics.setColor(drawUtils.colorFrom(asset))
     love.graphics.rectangle("fill", 0, 0, viewport.width, viewport.height)
 end
 
@@ -59,14 +32,7 @@ function render.draw(state)
     love.graphics.printf(i18n:t("appTitle"), state.layout.titleX, state.layout.titleY, content.width, "left")
 
     for _, button in ipairs(state.moduleButtons) do
-        -- Map each tile to its dedicated final art asset.
-        local moduleAssetKeyById = {
-            alphabet = "moduleCardAlphabet",
-            animals = "moduleCardAnimals",
-            numbers = "moduleCardNumbers",
-            universe = "moduleCardUniverse"
-        }
-        local normal = assets:get(moduleAssetKeyById[button.id] or "moduleCard")
+        local normal = assets:get(button.assetKey or "moduleCard")
 
         -- Press feedback: scale around tile center.
         local scale = button.visualScale or 1
@@ -90,14 +56,6 @@ function render.draw(state)
     end
 
     local langButton = state.languageButton
-    local profileButton = state.profileButton
-
-    love.graphics.setColor(0.9, 0.85, 0.75, 1)
-    love.graphics.rectangle("fill", profileButton.x, profileButton.y, profileButton.width, profileButton.height, 10, 10)
-    love.graphics.setColor(0.1, 0.1, 0.1, 1)
-    love.graphics.rectangle("line", profileButton.x, profileButton.y, profileButton.width, profileButton.height, 10, 10)
-    love.graphics.printf("Profile", profileButton.x, profileButton.y + 7, profileButton.width, "center")
-    love.graphics.printf(assets:getProfile(), profileButton.x, profileButton.y + 24, profileButton.width, "center")
 
     love.graphics.setColor(0.9, 0.85, 0.75, 1)
     love.graphics.rectangle("fill", langButton.x, langButton.y, langButton.width, langButton.height, 10, 10)

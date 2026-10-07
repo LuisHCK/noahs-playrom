@@ -1,28 +1,10 @@
+local images = require("src.core.images")
+
 local placeholderCard = {}
-local imageCache = {}
-
-local function getImage(path)
-    if not path then
-        return nil
-    end
-
-    if imageCache[path] ~= nil then
-        return imageCache[path]
-    end
-
-    if not love.filesystem.getInfo(path) then
-        imageCache[path] = false
-        return nil
-    end
-
-    local ok, image = pcall(love.graphics.newImage, path)
-    imageCache[path] = ok and image or false
-    return ok and image or nil
-end
 
 local function drawFill(rect, asset, fallbackColor)
     if asset and asset.type == "image" then
-        local image = getImage(asset.path)
+        local image = images.get(asset.path)
         if image then
             love.graphics.setColor(1, 1, 1, 1)
             love.graphics.draw(
