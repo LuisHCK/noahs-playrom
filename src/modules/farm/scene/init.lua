@@ -19,18 +19,15 @@ local function handleAction(state, action)
     end
 
     if action == "sound" then
-        audio.playTap(state)
         if state.lastAnimal then
             audio.playAnimalSound(state, state.lastAnimal.key)
         end
     elseif action == "name" then
-        audio.playTap(state)
         if state.lastAnimal then
             audio.playAnimalName(state, state.lastAnimal.key)
         end
     elseif action == "correct" then
         audio.playCorrect(state)
-        playFindPrompt(state)
     elseif action == "wrong" then
         audio.playWrong(state)
     elseif action == "complete" then
@@ -45,9 +42,7 @@ local function handleAction(state, action)
     elseif action:sub(1, 5) == "mode:" then
         local modeId = action:sub(6)
         stateModule.setMode(state, modeId)
-        if modeId == "find" then
-            playFindPrompt(state)
-        end
+        audio.playModeIntro(state, modeId)
     end
 end
 

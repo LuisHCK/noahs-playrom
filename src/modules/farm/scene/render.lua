@@ -274,7 +274,9 @@ local function drawBanner(state, layout, moduleData)
     local animals = moduleData.animals or {}
     local label = animals[target.key] or target.key
     local text
-    if state.find.prompt == "name" then
+    if (state.find.feedbackTimer or 0) > 0 then
+        text = moduleData.correct or "Correct!"
+    elseif state.find.prompt == "name" then
         text = string.format(moduleData.findPrompt or "Find: %s", label)
     else
         text = moduleData.listen or "Listen... who is it?"

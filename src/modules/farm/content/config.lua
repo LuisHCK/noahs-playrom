@@ -1,10 +1,10 @@
 return {
     worldWidth = 5120,
     -- World Y of the art's ground line (drives the parallax composition).
-    groundY = 560,
+    groundY = 540,
     -- Default bottom (baseline) Y for structures and animals when their entry
     -- omits `y`. Tuned to the barn.
-    baselineY = 620,
+    baselineY = 540,
     tapMaxMove = 12,
     tapMaxTime = 0.35,
     friction = 4.5,

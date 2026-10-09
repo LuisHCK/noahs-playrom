@@ -43,6 +43,7 @@ end
 
 function app:update(dt)
     self.scenery:update(dt)
+    audio:update(dt)
 end
 
 function app:draw()

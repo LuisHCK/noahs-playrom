@@ -51,15 +51,25 @@ end
 
 local function buildFarmLanguage(lang, keys)
     local names = {}
+    local namesQuestion = {}
     for _, key in ipairs(keys) do
         names[key] = string.format("assets/audio/%s/farm/names/%s.ogg", lang, key)
+        namesQuestion[key] = string.format("assets/audio/%s/farm/names_question/%s.ogg", lang, key)
     end
 
+    local base = string.format("assets/audio/%s/farm", lang)
     return {
-        intro = string.format("assets/audio/%s/farm/intro.wav", lang),
-        correct = string.format("assets/audio/%s/farm/correct.wav", lang),
-        celebrate = string.format("assets/audio/%s/farm/celebrate.wav", lang),
-        name = names
+        intro = base .. "/intro.ogg",
+        correct = base .. "/correct.ogg",
+        celebrate = base .. "/celebrate.ogg",
+        wrong = base .. "/wrong.ogg",
+        question = base .. "/question.ogg",
+        listen = base .. "/listen.ogg",
+        modeExplore = base .. "/mode_explore.ogg",
+        modeLearn = base .. "/mode_learn.ogg",
+        modeFind = base .. "/mode_find.ogg",
+        name = names,
+        nameQuestion = namesQuestion
     }
 end
 
@@ -99,7 +109,6 @@ return {
     farm = {
         common = {
             sfx = {
-                tap = "assets/audio/common/sfx/flip.wav",
                 swipe = "assets/audio/common/sfx/swipe.wav",
                 wrong = "assets/audio/common/sfx/flip.wav"
             },

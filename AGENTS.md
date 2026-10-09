@@ -81,6 +81,27 @@ assets/                  — Images, audio, fonts
 - Use `sips -g pixelWidth -g pixelHeight <file>` to get spritesheet/image dimensions
 - The `Spritesheet` class at `src/core/spritesheet.lua` expects `{ path, spriteWidth, spriteHeight, columns, rows }` — determine these from the image dimensions and visual layout
 
+## Voice-over audio import
+
+- The voice actor delivers **one continuous MP3 per language** with ~0.5s pauses between lines.
+- Split it into per-line clips with `scripts/import_voice.py`:
+
+  ```bash
+  python3 scripts/import_voice.py assets/audio/<lang>/farm-audio-<lang>.mp3 <lang> [--merge I ...]
+  ```
+
+  (`lang` is `en` or `es`.)
+- Line order is fixed (see `docs/farm-audio-script-<lang>.md`): 1–9 shared phrases,
+  10–18 normal-tone names, 19–27 question-tone names.
+- The tool prints the detected silence segments and **refuses to write unless it finds
+  exactly 27**. A long internal pause (e.g. the `...` in *"Escucha... ¿qué animal es?"*)
+  can add an extra segment; merge it with `--merge I` (1-based; merges segment `I` into
+  the next). Example that was needed for ES: `--merge 6`.
+- Output: **mono OGG Vorbis** (q5, 44.1 kHz) under `assets/audio/<lang>/farm/`
+  (`names/` normal tone, `names_question/` question tone).
+- Requires `ffmpeg` and `oggenc` (vorbis-tools) on `PATH`.
+- Raw masters (`assets/audio/**/farm-audio-*.mp3`) are gitignored — never ship them.
+
 ## Important files
 
 - `src/core/config.lua` — language defaults
@@ -94,6 +115,8 @@ assets/                  — Images, audio, fonts
 - `src/data/locales/` — translation strings
 - `src/data/audio_files.lua` — audio file mappings with language/common fallback
 - `scripts/verify.py` — project verifier (syntax, sprites, LuaJIT harnesses)
+- `scripts/import_voice.py` — splits a single narration MP3 into per-line voice clips
+- `docs/farm-audio-script-<lang>.md` — plain voice-over scripts (EN/ES) the actor reads
 - `scripts/tests/` — LuaJIT stub harnesses run by the verifier
 - `.opencode/tools/verify.ts` — opencode `verify` tool wrapping `scripts/verify.py`
 - `.gitignore` — excludes build artifacts, .DS_Store, IDE files, luac

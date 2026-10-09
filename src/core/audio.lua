@@ -3,7 +3,8 @@ local audioFiles = require("src.data.audio_files")
 local audio = {
     cache = {},
     activeBgm = nil,
-    volume = 1
+    volume = 1,
+    sequence = nil
 }
 
 -- Resolve dot-path keys like "alphabet.en.letters.a".
@@ -111,6 +112,89 @@ local function getSource(entry)
 
     audio.cache[cacheKey] = { source = source, baseVolume = entry.volume }
     return source
+end
+
+local DEFAULT_SEQUENCE_GAP = 0.12
+audio.sequenceGap = DEFAULT_SEQUENCE_GAP
+
+-- Play several keys back-to-back (used to stitch voice clips). Missing clips are
+-- skipped. Replaces any sequence already in flight.
+function audio:playSequence(keys, gap)
+    if self.sequence then
+        for _, item in ipairs(self.sequence.items) do
+            if item.played then
+                item.source:stop()
+            end
+        end
+    end
+
+    gap = gap or DEFAULT_SEQUENCE_GAP
+    local items = {}
+    local at = 0
+
+    for _, entry in ipairs(keys) do
+        -- A number inserts a silent pause (seconds) before the next clip.
+        if type(entry) == "number" then
+            at = at + entry
+        else
+            local node = resolveNode(entry)
+            local config = node and normalizeEntry(entry, node) or nil
+            local source = config and getSource(config) or nil
+            if source then
+                source:setVolume(config.volume * self.volume)
+                local duration = 0.6
+                local ok, value = pcall(source.getDuration, source)
+                if ok and type(value) == "number" then
+                    duration = value
+                end
+                items[#items + 1] = { source = source, at = at, played = false }
+                at = at + duration + gap
+            end
+        end
+    end
+
+    if #items == 0 then
+        self.sequence = nil
+        return false
+    end
+
+    self.sequence = { items = items, elapsed = 0, total = at }
+    return true
+end
+
+function audio:update(dt)
+    local sequence = self.sequence
+    if not sequence then
+        return
+    end
+
+    sequence.elapsed = sequence.elapsed + dt
+    for _, item in ipairs(sequence.items) do
+        if not item.played and sequence.elapsed >= item.at then
+            item.source:stop()
+            item.source:play()
+            item.played = true
+        end
+    end
+
+    if sequence.elapsed >= sequence.total then
+        self.sequence = nil
+    end
+end
+
+function audio:getDuration(key)
+    local node = resolveNode(key)
+    local entry = node and normalizeEntry(key, node) or nil
+    local source = entry and getSource(entry) or nil
+    if not source then
+        return 0
+    end
+
+    local ok, value = pcall(source.getDuration, source)
+    if ok and type(value) == "number" then
+        return value
+    end
+    return 0
 end
 
 function audio:play(key)

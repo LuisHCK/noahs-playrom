@@ -128,8 +128,13 @@ function state.update(self, dt)
 
     camera.update(self.camera, dt, config, config.worldWidth, self.layout.content.width)
 
-    if self.phase == "celebrating" and self.find then
-        self.find.celebrateT = (self.find.celebrateT or 0) + dt
+    if self.find then
+        if self.find.feedbackTimer and self.find.feedbackTimer > 0 then
+            self.find.feedbackTimer = math.max(0, self.find.feedbackTimer - dt)
+        end
+        if self.phase == "celebrating" then
+            self.find.celebrateT = (self.find.celebrateT or 0) + dt
+        end
     end
 end
 

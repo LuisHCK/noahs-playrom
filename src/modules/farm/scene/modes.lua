@@ -55,6 +55,7 @@ function modes.beginFind(state)
         prompt = "name",
         foundCount = 0,
         celebrateT = 0,
+        feedbackTimer = 0,
         lastKey = nil
     }
     modes.nextPrompt(state)

@@ -24,6 +24,9 @@ dist/
 tmp/
 temp/
 
+# Voice-over masters (source takes; the split clips live in assets/audio/<lang>/farm/)
+farm-audio-*.mp3
+
 # Luarocks
 .luarocks/
 .lua_modules/

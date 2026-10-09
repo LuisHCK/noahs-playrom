@@ -17,6 +17,7 @@ return {
             modes = { explore = "Explore", learn = "Names", find = "Find" },
             findPrompt = "Find: %s",
             listen = "Listen... who is it?",
+            correct = "Correct!",
             animals = {
                 cow = "Cow",
                 horse = "Horse",
